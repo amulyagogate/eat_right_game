@@ -1,0 +1,405 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Eat Right Game</title>
+  <meta name="description" content="A fun and interactive 2D food-catching game that teaches healthy nutritional habits.">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🥗</text></svg>">
+</head>
+<body>
+
+  <div id="app">
+
+    <!-- ====================================================================
+         SCREEN 1: PLAYER SETUP
+         ==================================================================== -->
+    <section id="screen-setup" class="game-screen active">
+      <h1 class="game-title">🥗 EAT RIGHT</h1>
+      <p class="game-subtitle">Your Plate, Your Power!</p>
+
+      <div class="setup-card">
+        <div id="setup-greeting" class="setup-greeting">Hi, Player!</div>
+
+        <!-- Name Input -->
+        <div class="input-group">
+          <label for="player-name-input" class="input-label">Enter your name:</label>
+          <input type="text" id="player-name-input" class="text-input" placeholder="e.g. Amulya" maxlength="50" autofocus autocomplete="off">
+          <select id="player-year" class="text-input">
+    <option value="">Select Year</option>
+    <option value="First Year">First Year</option>
+    <option value="Second Year">Second Year</option>
+    <option value="Third Year">Third Year</option>
+    <option value="Diploma">Diploma</option>
+</select>
+        </div>
+
+        <!-- Photo & Avatar Area -->
+        <div class="photo-setup-container">
+          <div class="avatar-view-frame" id="avatar-view-frame">
+            <img id="avatar-preview-img" src="" alt="Player Avatar" style="display: none;">
+            <div id="avatar-emoji-preview" class="avatar-emoji">🧑‍🍳</div>
+          </div>
+
+          <!-- Live Webcam Stream View (hidden by default until started) -->
+          <div id="camera-stream-box" class="camera-stream-box">
+            <video id="webcam-video" autoplay playsinline muted></video>
+            <canvas id="snapshot-canvas" style="display: none;"></canvas>
+          </div>
+
+          <!-- Camera & Photo Controls -->
+          <div class="photo-action-buttons">
+            <button type="button" id="btn-start-camera" class="btn-secondary">
+              📸 Take Photo
+            </button>
+            <button type="button" id="btn-take-snapshot" class="btn-secondary" style="display: none; background: #10B981; color: white;">
+              ✨ Snap Picture
+            </button>
+            <button type="button" id="btn-retake-camera" class="btn-secondary" style="display: none;">
+              🔄 Retake
+            </button>
+            <label for="avatar-file-upload" class="btn-secondary" style="cursor: pointer;">
+              📁 Upload Photo
+              <input type="file" id="avatar-file-upload" accept="image/*" style="display: none;">
+            </label>
+          </div>
+
+          <!-- Preset Avatar Picker -->
+          <div style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted); margin-top: 4px;">
+            Or pick an avatar:
+          </div>
+          <div id="avatar-preset-chips" class="avatar-preset-chips"></div>
+        </div>
+
+        <!-- Submit to Screen 2 -->
+        <button type="button" id="btn-next-setup" class="btn-primary">
+          NEXT ➔
+        </button>
+      </div>
+      <div style="margin-top: 10px; display: flex; justify-content: center;">
+           <button type="button" id="btn-reset-profile" class="btn-secondary" style="color: #EF4444; border-color: #FCA5A5;">
+    🗑️ Reset Profile Data
+</button>
+</div>
+    </section>
+
+
+    <!-- ====================================================================
+         SCREEN 2: MAIN MENU
+         ==================================================================== -->
+    <section id="screen-menu" class="game-screen hidden">
+      <div class="menu-container">
+        <!-- Player Profile Bar -->
+        <div class="player-profile-badge">
+          <div class="profile-mini-avatar">
+            <img id="menu-avatar-img" src="" alt="Profile" style="display: none;">
+            <div id="menu-avatar-emoji">🧑‍🍳</div>
+          </div>
+          <div>
+            <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">Welcome</div>
+            <div id="menu-player-name" class="profile-greeting-name">Player 1</div>
+          </div>
+        </div>
+
+        <h1 class="game-title">🥗 EAT RIGHT</h1>
+
+        <!-- Hero Card -->
+        <div class="menu-hero-card">
+          <div class="hero-food-icons">
+            <span>🍎</span>
+            <span>🍕</span>
+            <span>🥑</span>
+            <span>🍪</span>
+            <span>🧋</span>
+          </div>
+          <p class="hero-tagline">Catch your top 5 favorite food items!</p>
+          <!-- Large START Button -->
+          <button type="button" id="btn-start-game" class="btn-start-huge">
+            ▶ START GAME
+          </button>
+        </div>
+
+        <!-- Navigation Buttons Stack -->
+        <div class="menu-button-stack">
+          <button type="button" id="btn-how-to-play" class="btn-menu-option">
+            📖 How to Play
+          </button>
+          <button type="button" id="btn-settings" class="btn-menu-option">
+            ⚙️ Settings
+          </button>
+          <button type="button" id="btn-exit-menu" class="btn-menu-option" style="color: #64748B;">
+            🚪 Exit 
+          </button>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ====================================================================
+         SCREEN 3: GAMEPLAY (2D CATCHING GAME)
+         ==================================================================== -->
+    <section id="screen-gameplay" class="game-screen hidden">
+      <div class="gameplay-wrapper">
+        <!-- Top HUD -->
+        <header class="game-hud">
+          <div class="hud-player-chip">
+            <span>👤</span>
+            <span id="hud-player-name">Player</span>
+          </div>
+
+          <!-- 5 Catch Slots -->
+          <div class="hud-slots-box">
+            <div id="hud-slots-container" style="display: flex; gap: 6px;"></div>
+          </div>
+
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <div class="hud-score-badge">
+              <span>⭐</span>
+              <span id="hud-score-value">0</span>
+            </div>
+            <button type="button" id="btn-pause-game" class="btn-icon-pause" title="Pause Game">
+              ⏸️
+            </button>
+          </div>
+        </header>
+
+        <!-- 2D Canvas Play Area -->
+        <div class="canvas-container">
+          <canvas id="game-canvas"></canvas>
+
+          <!-- 3 -> 2 -> 1 -> GO! Countdown Overlay -->
+          <div id="countdown-overlay" class="countdown-overlay hidden">
+            <div id="countdown-text" class="countdown-text pulse-in">3</div>
+          </div>
+        </div>
+
+        <!-- Mobile on-screen touch arrows (shown on mobile devices) -->
+        <div class="mobile-touch-bar">
+          <button type="button" id="btn-touch-left" class="touch-arrow-btn" aria-label="Move Left">
+            ⬅️ Move Left
+          </button>
+          <button type="button" id="btn-touch-right" class="touch-arrow-btn" aria-label="Move Right">
+            Move Right ➡️
+          </button>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ====================================================================
+         SCREEN 4: GAME OVER & NUTRITION SCORE REPORT
+         ==================================================================== -->
+    <section id="screen-score" class="game-screen hidden">
+      <div class="score-container">
+        <div class="score-hero-header">
+          <div class="result-food-plate">
+
+    <div class="result-plate-caption">
+        A Plate Full of Your Favorites!
+    </div>
+
+    <div class="result-plate">
+        <div id="result-plate-foods"></div>
+    </div>
+
+</div>
+          <div style="font-size: 1rem; color: var(--text-muted); font-weight: 600;">Here is your nutrition breakdown:</div>
+          <div id="score-final-value" class="final-score-display">50</div>
+          <div class="score-time">
+    Time Taken: <span id="score-time-value">0.00</span> seconds
+</div>
+          <div id="score-health-tier" class="health-tier-badge tier-super">
+            🌟 Super Nutrition Hero!
+          </div>
+        </div>
+
+        <!-- Quick Summary Stats Grid -->
+        <div class="stat-highlight-grid">
+          <div class="stat-card healthy-border">
+            <span class="stat-label">Healthy Foods Caught</span>
+            <span id="stat-healthy-count" class="stat-num healthy-color">5</span>
+            <span id="stat-healthy-pts" class="stat-sub healthy-color">+50 pts</span>
+          </div>
+          <div class="stat-card junk-border">
+            <span class="stat-label">Junk Foods Caught</span>
+            <span id="stat-junk-count" class="stat-num junk-color">0</span>
+            <span id="stat-junk-pts" class="stat-sub junk-color">+0 pts</span>
+          </div>
+        </div>
+
+        <!-- Cumulative Nutrition Totals -->
+        <div class="meal-totals-wrapper">
+          <div class="meal-totals-header">
+            <span>📊</span>
+            <span>Total Meal Nutrition (from 5 caught foods)</span>
+          </div>
+          <div id="meal-nutrition-totals" class="meal-nutrition-totals"></div>
+        </div>
+
+        <!-- All 5 Caught Foods - Compact Nutrition Cards -->
+        <div class="caught-foods-header">
+          <span>🍽️</span>
+          <span>Caught Foods Nutrition Breakdown</span>
+        </div>
+        <div id="nutrition-cards-grid" class="nutrition-cards-grid">
+          <!-- Populated dynamically via app.js -->
+        </div>
+
+        <!-- Actions -->
+        <div class="score-action-buttons">
+          <button type="button" id="btn-restart-game" class="btn-primary btn-score-primary">
+            🔄 RESTART
+          </button>
+          <button type="button" id="btn-view-leaderboard" class="btn-primary btn-score-primary">
+            🏆 VIEW LEADERBOARD
+</button>
+          <button type="button" id="btn-exit-score" class="btn-secondary btn-score-primary" style="background: #FFFFFF;">
+            🚪 EXIT TO SETUP
+          </button>
+        </div>
+
+        
+      </div>
+    </section>
+
+<!-- LEADERBOARD SCREEN -->
+<section id="screen-leaderboard" class="game-screen">
+    <div class="screen-content">
+        <h2>🏆 LEADERBOARD</h2>
+
+        <div class="leaderboard-filters">
+            <button class="leaderboard-filter active" data-year="All Years">All Years</button>
+            <button class="leaderboard-filter" data-year="First Year">First Year</button>
+            <button class="leaderboard-filter" data-year="Second Year">Second Year</button>
+            <button class="leaderboard-filter" data-year="Third Year">Third Year</button>
+            <button class="leaderboard-filter" data-year="Diploma">Diploma</button>
+        </div>
+
+        <div id="leaderboard-list"></div>
+
+        <button id="btn-back-from-leaderboard" class="btn-primary">
+            ← BACK
+        </button>
+    </div>
+</section>
+
+    <!-- ====================================================================
+         MODALS
+         ==================================================================== -->
+
+    <!-- How to Play Modal -->
+    <div id="modal-how-to" class="modal-backdrop">
+      <div class="modal-content-card">
+        <button type="button" class="modal-close-btn" aria-label="Close">✕</button>
+        <h3 class="modal-title">📖 How to Play</h3>
+
+        <div class="rules-list">
+          <div class="rule-item">
+            <div class="rule-icon">⬇️</div>
+            <div class="rule-text">
+              <h5>Food Falls from the Sky</h5>
+              <p>Meals and tempting food items will continuously fall from the top of the screen.</p>
+            </div>
+          </div>
+
+          <div class="rule-item">
+            <div class="rule-icon">🍽️</div>
+            <div class="rule-text">
+              <h5>Move the Plate</h5>
+              <p>Move your plate left and right to catch your favorite food items! Use arrow keys or A/D on desktop, or touch & drag on mobile.</p>
+            </div>
+          </div>
+
+          <div class="rule-item">
+            <div class="rule-icon">🎯</div>
+            <div class="rule-text">
+              <h5>Catch Exactly 5 Items</h5>
+              <p>Your plate can only hold 5 foods. As soon as you catch your 5th item, the game ends and your score is calculated!</p>
+            </div>
+          </div>
+
+          
+        </div>
+
+        <button type="button" class="btn-primary modal-close-btn-action modal-close-btn">
+          X
+        </button>
+      </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="modal-settings" class="modal-backdrop">
+      <div class="modal-content-card">
+        <button type="button" class="modal-close-btn" aria-label="Close">✕</button>
+        <h3 class="modal-title">⚙️ Settings</h3>
+
+        <div class="settings-group">
+          <div class="setting-row">
+            <span class="setting-label">Sound Effects (SFX)</span>
+            <label class="toggle-switch">
+              <input type="checkbox" id="setting-sfx-toggle" checked>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+
+      
+
+          <div class="setting-row">
+            <span class="setting-label">Volume</span>
+            <input type="range" id="setting-volume-slider" class="volume-range-input" min="0" max="100" value="70">
+          </div>
+
+         
+          
+        </div>
+
+        <button type="button" class="btn-primary modal-close-btn">
+          X
+        </button>
+      </div>
+    </div>
+
+    <!-- Pause Modal -->
+    <div id="modal-pause" class="modal-backdrop">
+      <div class="modal-content-card" style="text-align: center; align-items: center;">
+        <h3 class="modal-title">⏸️ Game Paused</h3>
+        <p style="color: var(--text-muted); font-size: 0.95rem;">Take a breath! Ready to catch more healthy foods?</p>
+        <div style="display: flex; flex-direction: column; gap: 10px; width: 100%; margin-top: 8px;">
+          <button type="button" id="btn-resume-game" class="btn-primary">▶ Resume Game</button>
+          <button type="button" id="btn-restart-from-pause" class="btn-secondary">🔄 Restart Game</button>
+          <button type="button" id="btn-quit-to-menu" class="btn-secondary" style="color: #64748B;">🚪 Quit to Menu</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Game Over Notification Modal -->
+    <div id="modal-game-over" class="modal-backdrop">
+      <div class="modal-content-card" style="text-align: center; align-items: center;">
+        <div style="font-size: 3.5rem;">🎉</div>
+        <h3 class="modal-title" style="color: #DC2626; font-size: 2rem;">GAME OVER</h3>
+        <p style="color: var(--text-main); font-weight: 600; font-size: 1.1rem;">
+          Your Plate is full! 
+        </p>
+        <p style="color: var(--text-muted); font-size: 0.95rem;">
+          Check out your score and discover how healthy your plate is!
+        </p>
+        <button type="button" id="btn-check-score" class="btn-primary" style="margin-top: 8px; font-size: 1.3rem;">
+          CHECK SCORE ➔
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Scripts: Data, Audio, Game Entities & Engine, Main App Controller -->
+  <script src="js/data/foods.js"></script>
+  <script src="js/audio/sound.js"></script>
+  <script src="js/game/plate.js"></script>
+  <script src="js/game/falling_item.js"></script>
+  <script src="js/game/particles.js"></script>
+  <script src="js/game/engine.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
